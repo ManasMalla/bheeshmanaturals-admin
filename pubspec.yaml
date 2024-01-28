@@ -86,15 +86,66 @@ flutter:
   fonts:
     - family: Gilroy
       fonts:
-        - asset: fonts/Gilroy-Regular.ttf
+        - asset: fonts/Gilroy-Black.ttf
+          weight: 900
+          style: normal
+        - asset: fonts/Gilroy-BlackItalic.ttf
+          weight: 900
+          style: italic
         - asset: fonts/Gilroy-Bold.ttf
           weight: 700
-        - asset: fonts/Gilroy-ExtraBold.ttf
+          style: normal
+        - asset: fonts/Gilroy-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: fonts/Gilroy-Extrabold.ttf
           weight: 800
+          style: normal
+        - asset: fonts/Gilroy-ExtraboldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: fonts/Gilroy-Heavy.ttf
+          weight: 900
+          style: normal
+        - asset: fonts/Gilroy-HeavyItalic.ttf
+          weight: 900
+          style: italic
         - asset: fonts/Gilroy-Light.ttf
           weight: 300
+          style: normal
+        - asset: fonts/Gilroy-LightItalic.ttf
+          weight: 300
+          style: italic
         - asset: fonts/Gilroy-Medium.ttf
           weight: 500
+          style: normal
+        - asset: fonts/Gilroy-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: fonts/Gilroy-Regular.ttf
+          weight: 400
+          style: normal
+        - asset: fonts/Gilroy-RegularItalic.ttf
+          weight: 400
+          style: italic
+        - asset: fonts/Gilroy-Semibold.ttf
+          weight: 600
+          style: normal
+        - asset: fonts/Gilroy-SemiboldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: fonts/Gilroy-Thin.ttf
+          weight: 100
+          style: normal
+        - asset: fonts/Gilroy-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: fonts/Gilroy-UltraLight.ttf
+          weight: 200
+          style: normal
+        - asset: fonts/Gilroy-UltraLightItalic.ttf
+          weight: 200
+          style: italic
   # fonts:
   #   - family: Schyler
   #     fonts:
