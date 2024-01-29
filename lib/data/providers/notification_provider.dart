@@ -37,7 +37,8 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendNotification(BheeshmaNotification bheeshmaNotification) async {
+  Future<void> sendNotification(
+      BheeshmaNotification bheeshmaNotification) async {
     if (bheeshmaNotification.uid == null) {
       await FirebaseFirestore.instance
           .collection('notifications')
@@ -53,7 +54,7 @@ class NotificationProvider extends ChangeNotifier {
         'payload': bheeshmaNotification.payload,
         'route': bheeshmaNotification.route,
       });
-    }else{
+    } else {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(bheeshmaNotification.uid)
@@ -87,6 +88,7 @@ class NotificationProvider extends ChangeNotifier {
         .collection('notifications')
         .get()
         .then((value) {
+      print(value);
       notification = value.docs.map((element) {
         final categoryData = element.data();
         return BheeshmaNotification(
@@ -95,7 +97,7 @@ class NotificationProvider extends ChangeNotifier {
           image: categoryData['image'],
           type: categoryData['type'],
           id: categoryData['id'],
-          updatedAt: categoryData['updatedAt'].toDate(),
+          updatedAt: categoryData['updatedAt'],
           cta: categoryData['cta'] ?? 'Explore Now',
           payload: categoryData['payload'] ?? '',
           route: categoryData['route'] ?? '',
