@@ -88,7 +88,6 @@ class NotificationProvider extends ChangeNotifier {
         .collection('notifications')
         .get()
         .then((value) {
-      print(value);
       notification = value.docs.map((element) {
         final categoryData = element.data();
         return BheeshmaNotification(
@@ -110,7 +109,9 @@ class NotificationProvider extends ChangeNotifier {
   fetchUserNotifications() async {
     final userNotificationsGroup =
         await FirebaseFirestore.instance.collectionGroup('notifications').get();
-    userNotificationsGroup.docs.forEach((element) {
+    userNotificationsGroup.docs
+        .skipWhile((value) => value.reference.parent.path == "notifications")
+        .forEach((element) {
       final notification = element.data();
       final bheeshmaNotification = BheeshmaNotification(
           title: notification['title'],
@@ -122,7 +123,7 @@ class NotificationProvider extends ChangeNotifier {
           cta: notification['cta'] ?? 'Explore Now',
           payload: notification['payload'] ?? '',
           route: notification['route'] ?? '',
-          uid: element.reference.parent.parent?.id);
+          uid: "123");
       this.notification.add(bheeshmaNotification);
     });
     notifyListeners();

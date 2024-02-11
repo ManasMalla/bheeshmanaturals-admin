@@ -263,13 +263,18 @@ class OrderCard extends StatelessWidget {
                                           });
                                     },
                             ),
-                      Text(
-                        "${order.products[index].productName} x ${order.products[index].quantity}",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            decoration: order.status[index] > 1
-                                ? TextDecoration.lineThrough
-                                : null,
-                            decorationThickness: 2),
+                      Expanded(
+                        child: Text(
+                          "${order.products[index].productName} x ${order.products[index].quantity}",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                  decoration: order.status[index] > 1
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  decorationThickness: 2),
+                        ),
                       ),
                     ],
                   );

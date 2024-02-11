@@ -180,7 +180,6 @@ class OrderProvider extends ChangeNotifier {
             type: addressesData?['type'] ?? "",
             distance: addressesData?['distance'] ?? 0,
           );
-          print("all good perfect");
           return Order.Order(
             uid: element.reference.parent.parent?.id,
             id: categoryData['id'],
