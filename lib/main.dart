@@ -194,7 +194,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         .signInWithEmailAndPassword(
                             email: usernameController.text,
                             password: passwordController.text)
-                        .then((value) {
+                        .then((value) async {
+                      await fetchDetails(context);
                       Navigator.of(context).pushReplacementNamed('/dashboard');
                     }).catchError((e) {
                       print(e);

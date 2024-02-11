@@ -1,5 +1,6 @@
 import 'package:bheeshma_naturals_admin/data/entitites/order.dart';
 import 'package:bheeshma_naturals_admin/data/providers/order_provider.dart';
+import 'package:bheeshma_naturals_admin/presentation/invoice_page.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -28,7 +29,7 @@ class OrderCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    "#${order.id}",
+                    "#${order.id + 1}",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Theme.of(context)
                             .colorScheme
@@ -88,7 +89,8 @@ class OrderCard extends StatelessWidget {
                                 Theme.of(context).colorScheme.error,
                           ),
                           onPressed: () {
-                            orderProvider.rejectOrder(order.id);
+                            orderProvider.rejectOrder(
+                                order.id, order.uid ?? "");
                           },
                           child: const Text("Reject"),
                         ),
@@ -97,7 +99,8 @@ class OrderCard extends StatelessWidget {
                         ),
                         FilledButton(
                           onPressed: () {
-                            orderProvider.acceptOrder(order.id);
+                            orderProvider.acceptOrder(
+                                order.id, order.uid ?? "");
                           },
                           child: const Text("Accept"),
                         ),
@@ -208,7 +211,9 @@ class OrderCard extends StatelessWidget {
                                                                     orderProvider.rejectOrderItem(
                                                                         order
                                                                             .id,
-                                                                        index);
+                                                                        index,
+                                                                        order.uid ??
+                                                                            "");
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
@@ -240,7 +245,9 @@ class OrderCard extends StatelessWidget {
                                                                       order.id,
                                                                       index,
                                                                       trackingIDController
-                                                                          .text);
+                                                                          .text,
+                                                                      order.uid ??
+                                                                          "");
 
                                                               Navigator.of(
                                                                       context)
@@ -283,6 +290,20 @@ class OrderCard extends StatelessWidget {
                 primary: false,
                 shrinkWrap: true,
               ),
+              order.status.where((e) => e != 7).isEmpty
+                  ? SizedBox()
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => InvoicePage(
+                                    order,
+                                  )));
+                        },
+                        child: Text("View Invoice"),
+                      ),
+                    ),
             ]),
           ),
         );

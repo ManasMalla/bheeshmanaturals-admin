@@ -72,24 +72,27 @@ class OrderProvider extends ChangeNotifier {
     // )
   ];
 
-  void rejectOrder(int id) {
-    final order = orders.firstWhere((element) => element.id == id);
+  void rejectOrder(int id, String uid) {
+    final order =
+        orders.firstWhere((element) => element.id == id && element.uid == uid);
     final newOrder =
         order.copyWith(status: order.status.map((e) => 7).toList());
 
     updateOrder(id, newOrder);
   }
 
-  void acceptOrder(int id) {
-    final order = orders.firstWhere((element) => element.id == id);
+  void acceptOrder(int id, String uid) {
+    final order =
+        orders.firstWhere((element) => element.id == id && element.uid == uid);
     final newOrder =
         order.copyWith(status: order.status.map((e) => 1).toList());
 
     updateOrder(id, newOrder);
   }
 
-  void rejectOrderItem(int id, int index) {
-    final order = orders.firstWhere((element) => element.id == id);
+  void rejectOrderItem(int id, int index, String uid) {
+    final order =
+        orders.firstWhere((element) => element.id == id && element.uid == uid);
     var status = order.status;
     status[index] = 7;
     final newOrder = order.copyWith(status: status);
@@ -97,8 +100,9 @@ class OrderProvider extends ChangeNotifier {
     updateOrder(id, newOrder);
   }
 
-  void updateOrderItem(int id, int index, String text) {
-    final order = orders.firstWhere((element) => element.id == id);
+  void updateOrderItem(int id, int index, String text, String uid) {
+    final order =
+        orders.firstWhere((element) => element.id == id && element.uid == uid);
     var status = order.status;
     status[index] = (status[index] == 1 || status[index] == 0) ? 2 : 3;
     final newOrder = order.copyWith(
@@ -116,7 +120,9 @@ class OrderProvider extends ChangeNotifier {
         .update({
       'status': newOrder.status,
     });
-    orders[orders.indexWhere((element) => element.id == id)] = newOrder;
+    orders[orders.indexWhere(
+            (element) => element.id == id && element.uid == newOrder.uid)] =
+        newOrder;
     notifyListeners();
   }
 
