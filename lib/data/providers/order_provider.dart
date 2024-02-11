@@ -121,6 +121,7 @@ class OrderProvider extends ChangeNotifier {
   }
 
   fetchOrders() async {
+    print("123");
     try {
       await FirebaseFirestore.instance
           .collectionGroup('orders')
@@ -218,6 +219,13 @@ class OrderProvider extends ChangeNotifier {
         }).toList();
         orders = await Future.wait(futureOrders);
         orders.sort((a, b) => a.id.compareTo(b.id));
+        final pendingOrders = orders
+            .where((element) =>
+                element.status.where((element) => element == 7).isEmpty)
+            .toList();
+        orders.removeWhere((element) =>
+            element.status.where((element) => element == 7).isEmpty);
+        orders.insertAll(0, pendingOrders);
         notifyListeners();
       });
     } catch (e) {

@@ -66,7 +66,7 @@ class OrderCard extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        "${order.shippingAddress.name}\n${order.shippingAddress.phoneNumber}\n\n${order.billingAddress.doorNumber}, ${order.billingAddress.building}, ${order.billingAddress.street}, ${order.billingAddress.city}, ${order.billingAddress.state}, ${order.billingAddress.pincode}",
+                        "${order.shippingAddress.name}\n${order.shippingAddress.phoneNumber}\n${order.billingAddress.doorNumber}, ${order.billingAddress.building}, ${order.billingAddress.street}, ${order.billingAddress.city}, ${order.billingAddress.state}, ${order.billingAddress.pincode}",
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ),

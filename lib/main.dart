@@ -232,10 +232,10 @@ class _MyHomePageState extends State<MyHomePage> {
             .fetchProducts(
                 categoryProvider.categories, categoryProvider.subcategories)
             .then((_) async {
-          await advertisementProvider.fetchAdvertisements().then((_) async {
-            await notificationProvider.fetchNotification().then((_) async {
-              await couponProvider.fetchCoupons().then((_) async {
-                await orderProvider.fetchOrders();
+          await couponProvider.fetchCoupons().then((_) async {
+            await orderProvider.fetchOrders().then((_) async {
+              await advertisementProvider.fetchAdvertisements().then((_) async {
+                await notificationProvider.fetchNotification();
               });
             });
           });

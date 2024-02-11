@@ -118,7 +118,7 @@ class NotificationProvider extends ChangeNotifier {
           image: notification['image'],
           type: notification['type'],
           id: notification['id'],
-          updatedAt: notification['updatedAt'].toDate(),
+          updatedAt: notification['updatedAt'],
           cta: notification['cta'] ?? 'Explore Now',
           payload: notification['payload'] ?? '',
           route: notification['route'] ?? '',
