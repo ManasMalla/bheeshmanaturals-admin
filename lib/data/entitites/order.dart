@@ -9,6 +9,7 @@ class Order {
   final List<OrderItem> products;
   final DateTime date;
   final List<int> status;
+  final List<Map<String, String>> deliveryStatus;
   final PaymentMethod paymentMethod;
   final Address shippingAddress;
   final Address billingAddress;
@@ -27,6 +28,7 @@ class Order {
     this.coupon,
     this.razorpayOrderId,
     this.razorpayPaymentId,
+    required this.deliveryStatus,
   });
 
   Order copyWith({
@@ -40,6 +42,7 @@ class Order {
     String? razorpayOrderId,
     String? razorpayPaymentId,
     Coupon? coupon,
+    List<Map<String, String>>? deliveryStatus,
   }) {
     return Order(
       uid: this.uid,
@@ -53,6 +56,7 @@ class Order {
       razorpayOrderId: razorpayOrderId ?? this.razorpayOrderId,
       razorpayPaymentId: razorpayPaymentId ?? this.razorpayPaymentId,
       coupon: coupon ?? this.coupon,
+      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
     );
   }
 }

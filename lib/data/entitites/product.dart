@@ -31,6 +31,7 @@ class Product {
   List<QuantityInfo> get discountedPrices {
     return price
         .map((product) => QuantityInfo(
+            discount: product.discount,
             quantity: product.quantity,
             price: discountType == DiscountType.percentage
                 ? product.price - ((product.price * discount) / 100).ceil()
@@ -60,9 +61,11 @@ class QuantityInfo {
   final String quantity;
   final double price;
   final int stock;
+  final int discount;
   const QuantityInfo({
     required this.quantity,
     required this.price,
     required this.stock,
+    required this.discount,
   });
 }

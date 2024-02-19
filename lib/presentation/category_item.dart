@@ -296,11 +296,16 @@ Future<dynamic> showCategoryBottomSheet(
                         );
                       } else {
                         await categoryProvider.addCategory(
-                          Category(
-                            id: categoryProvider.categories.length,
-                            name: nameController.text,
-                          ),
-                        );
+                            Category(
+                              id: categoryProvider.categories.length,
+                              name: nameController.text,
+                            ), (error) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(error),
+                            ),
+                          );
+                        });
                       }
 
                       Navigator.pop(context);

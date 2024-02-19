@@ -20,6 +20,7 @@ class OrderItemCard extends StatelessWidget {
   final bool isReview;
   final bool isOrderHistory;
   final Function(int) modifyItemCount;
+  final bool isCancelled;
   const OrderItemCard({
     super.key,
     required this.productName,
@@ -29,6 +30,7 @@ class OrderItemCard extends StatelessWidget {
     this.isReview = false,
     this.isOrderHistory = false,
     required this.modifyItemCount,
+    this.isCancelled = false,
   });
 
   @override
@@ -179,10 +181,12 @@ class OrderItemCard extends StatelessWidget {
                 : const SizedBox()
           ],
         ),
-        Image.network(
-          "https://static.vecteezy.com/system/resources/previews/021/433/002/original/cancelled-rubber-stamp-free-png.png",
-          height: 50,
-        )
+        isCancelled
+            ? Image.network(
+                "https://static.vecteezy.com/system/resources/previews/021/433/002/original/cancelled-rubber-stamp-free-png.png",
+                height: 50,
+              )
+            : SizedBox(),
       ],
     );
   }
@@ -268,6 +272,7 @@ class InvoicePage extends StatelessWidget {
                   quantityChoice: orderItem.size,
                   modifyItemCount: (_) {},
                   isReview: true,
+                  isCancelled: order.status[productOrderIndex] == 7,
                 );
               }),
           const SizedBox(

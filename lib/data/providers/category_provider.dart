@@ -87,7 +87,13 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addCategory(Category category) async {
+  Future<void> addCategory(Category category, Function(String) onError) async {
+    if (categories
+        .where((element) => element.name == category.name)
+        .isNotEmpty) {
+      onError("Category already exists!");
+      return;
+    }
     await FirebaseFirestore.instance
         .collection('category')
         .doc(category.id.toString())

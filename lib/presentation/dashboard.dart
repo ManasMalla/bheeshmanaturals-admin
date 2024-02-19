@@ -198,6 +198,7 @@ class _NewProductPageState extends State<NewProductPage> {
       'price': TextEditingController(),
       'quantity': TextEditingController(),
       'stock': TextEditingController(),
+      'discount': TextEditingController(),
     }
   ];
   var discountController = TextEditingController();
@@ -221,6 +222,7 @@ class _NewProductPageState extends State<NewProductPage> {
         'price': TextEditingController(text: element.price.toString()),
         'quantity': TextEditingController(text: element.quantity.toString()),
         'stock': TextEditingController(text: element.stock.toString()),
+        'discount': TextEditingController(text: element.discount.toString()),
       });
     });
     imageURL = widget.product?.image;
@@ -349,6 +351,25 @@ class _NewProductPageState extends State<NewProductPage> {
                                       const SizedBox(
                                         width: 12,
                                       ),
+                                      Expanded(
+                                        child: TextField(
+                                          controller:
+                                              pricesAndQuantityControllers
+                                                      .elementAt(
+                                                          index)['discount']
+                                                  as TextEditingController,
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            labelText: 'Discount',
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
                                       IconButton(
                                         onPressed: () {
                                           setState(() {
@@ -371,54 +392,55 @@ class _NewProductPageState extends State<NewProductPage> {
                                       'price': TextEditingController(),
                                       'quantity': TextEditingController(),
                                       'stock': TextEditingController(),
+                                      'discount': TextEditingController(),
                                     });
                                   });
                                 },
                                 icon: const Icon(Icons.add),
                                 label: const Text('Add Price')),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            Row(
-                              children: [
-                                Radio(
-                                    value: DiscountType.percentage,
-                                    groupValue: type,
-                                    onChanged: (_) {
-                                      setState(() {
-                                        type = DiscountType.percentage;
-                                      });
-                                    }),
-                                const Text("Percent"),
-                                Radio(
-                                    value: DiscountType.fixed,
-                                    groupValue: type,
-                                    onChanged: (_) {
-                                      setState(() {
-                                        type = DiscountType.fixed;
-                                      });
-                                    }),
-                                const Text("Fixed"),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                Expanded(
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                        border: UnderlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: BorderSide.none),
-                                        labelText: 'Discount',
-                                        filled: true,
-                                        fillColor: Theme.of(context)
-                                            .colorScheme
-                                            .secondaryContainer),
-                                    controller: discountController,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // const SizedBox(
+                            //   height: 16,
+                            // ),
+                            // Row(
+                            //   children: [
+                            //     Radio(
+                            //         value: DiscountType.percentage,
+                            //         groupValue: type,
+                            //         onChanged: (_) {
+                            //           setState(() {
+                            //             type = DiscountType.percentage;
+                            //           });
+                            //         }),
+                            //     const Text("Percent"),
+                            //     Radio(
+                            //         value: DiscountType.fixed,
+                            //         groupValue: type,
+                            //         onChanged: (_) {
+                            //           setState(() {
+                            //             type = DiscountType.fixed;
+                            //           });
+                            //         }),
+                            //     const Text("Fixed"),
+                            //     const SizedBox(
+                            //       width: 12,
+                            //     ),
+                            //     Expanded(
+                            //       child: TextField(
+                            //         decoration: InputDecoration(
+                            //             border: UnderlineInputBorder(
+                            //                 borderRadius:
+                            //                     BorderRadius.circular(8),
+                            //                 borderSide: BorderSide.none),
+                            //             labelText: 'Discount',
+                            //             filled: true,
+                            //             fillColor: Theme.of(context)
+                            //                 .colorScheme
+                            //                 .secondaryContainer),
+                            //         controller: discountController,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                             const SizedBox(
                               height: 24,
                             ),
@@ -656,6 +678,10 @@ class _NewProductPageState extends State<NewProductPage> {
                                       stock: int.parse(
                                           (e['stock'] as TextEditingController)
                                               .text),
+                                      discount: int.tryParse((e['discount']
+                                                  as TextEditingController)
+                                              .text) ??
+                                          0,
                                     ),
                                   )
                                   .toList(),
@@ -777,9 +803,15 @@ class NotificationSection extends StatelessWidget {
   }
 }
 
-class OrderSection extends StatelessWidget {
+class OrderSection extends StatefulWidget {
   const OrderSection({super.key});
 
+  @override
+  State<OrderSection> createState() => _OrderSectionState();
+}
+
+class _OrderSectionState extends State<OrderSection> {
+  var selectedChip = 0;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -801,18 +833,140 @@ class OrderSection extends StatelessWidget {
             const SizedBox(
               height: 24,
             ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 12,
+              children: [
+                FilterChip(
+                  showCheckmark: false,
+                  selected: selectedChip == 0,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.new_label,
+                        size: 16,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text("Fresh Orders"),
+                    ],
+                  ),
+                  onSelected: (_) {
+                    setState(() {
+                      selectedChip = 0;
+                    });
+                  },
+                ),
+                FilterChip(
+                  showCheckmark: false,
+                  selected: selectedChip == 1,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.pending_actions_rounded,
+                        size: 16,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text("In Progress"),
+                    ],
+                  ),
+                  onSelected: (_) {
+                    setState(() {
+                      selectedChip = 1;
+                    });
+                  },
+                ),
+                FilterChip(
+                  showCheckmark: false,
+                  selected: selectedChip == 2,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.local_shipping,
+                        size: 16,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text("Shipped"),
+                    ],
+                  ),
+                  onSelected: (_) {
+                    setState(() {
+                      selectedChip = 2;
+                    });
+                  },
+                ),
+                FilterChip(
+                  showCheckmark: false,
+                  selected: selectedChip == 3,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.markunread_mailbox_rounded,
+                        size: 16,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text("Delivered"),
+                    ],
+                  ),
+                  onSelected: (_) {
+                    setState(() {
+                      selectedChip = 3;
+                    });
+                  },
+                ),
+                FilterChip(
+                  showCheckmark: false,
+                  selected: selectedChip == 7,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.cancel,
+                        size: 16,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text("Cancelled"),
+                    ],
+                  ),
+                  onSelected: (_) {
+                    setState(() {
+                      selectedChip = 7;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 24,
+            ),
             Consumer<OrderProvider>(builder: (context, orderProvider, child) {
+              final cardDatagrams = orderProvider.orders
+                  .where((element) => element.status.contains(selectedChip))
+                  .toList();
               return GridView.builder(
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: orderProvider.orders.length,
+                  itemCount: cardDatagrams.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 24,
                       childAspectRatio: 1),
                   itemBuilder: (context, index) {
-                    return OrderCard(orderProvider.orders[index]);
+                    return OrderCard(cardDatagrams[index]);
                   });
             })
           ],

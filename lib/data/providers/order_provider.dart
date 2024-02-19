@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:bheeshma_naturals_admin/data/entitites/address.dart';
 import 'package:bheeshma_naturals_admin/data/entitites/coupon.dart';
 import 'package:bheeshma_naturals_admin/data/entitites/order.dart' as Order;
 import 'package:bheeshma_naturals_admin/data/entitites/order_item.dart';
 import 'package:bheeshma_naturals_admin/data/entitites/payment_method.dart';
 import 'package:bheeshma_naturals_admin/data/entitites/discount_type.dart';
+import 'package:bheeshma_naturals_admin/data/secrets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class OrderProvider extends ChangeNotifier {
   List<Order.Order> orders = [
@@ -72,13 +76,47 @@ class OrderProvider extends ChangeNotifier {
     // )
   ];
 
-  void rejectOrder(int id, String uid) {
+  Future<void> rejectOrder(int id, String uid) async {
     final order =
         orders.firstWhere((element) => element.id == id && element.uid == uid);
-    final newOrder =
-        order.copyWith(status: order.status.map((e) => 7).toList());
+    var basicAuth = base64Encode(
+        utf8.encode('${RazorpaySecret.keyId}:${RazorpaySecret.keySecret}'));
+    final amount = order.products.map((e) => (e.price) * ((e.quantity))).reduce(
+              (value, element) => value + element,
+            ) -
+        (order.coupon == null
+            ? 0
+            : order.coupon!.type == DiscountType.percentage
+                ? (order.coupon!.discount *
+                    0.01 *
+                    order.products
+                        .map((e) => (e.price) * ((e.quantity)))
+                        .reduce(
+                          (value, element) => value + element,
+                        ))
+                : order.coupon!.discount);
+    print(amount);
+    final paymentDetailsResponse = await post(
+        Uri.parse(
+          'https://api.razorpay.com/v1/payments/${order.razorpayPaymentId}/refund',
+        ),
+        headers: {
+          'Authorization': 'Basic $basicAuth',
+          'content-type': 'application/json'
+        },
+        body: json.encode({
+          "amount": amount * 100,
+          "reverse_all": 1,
+        }));
+    final paymentDetails = json.decode(paymentDetailsResponse.body);
+    print(paymentDetails);
+    if (paymentDetails['status'] == 'processed') {
+      final newOrder =
+          order.copyWith(status: order.status.map((e) => 7).toList());
+      //rejected order amount
 
-    updateOrder(id, newOrder);
+      updateOrder(id, newOrder);
+    }
   }
 
   void acceptOrder(int id, String uid) {
@@ -90,23 +128,52 @@ class OrderProvider extends ChangeNotifier {
     updateOrder(id, newOrder);
   }
 
-  void rejectOrderItem(int id, int index, String uid) {
+  Future<void> rejectOrderItem(int id, int index, String uid) async {
     final order =
         orders.firstWhere((element) => element.id == id && element.uid == uid);
-    var status = order.status;
-    status[index] = 7;
-    final newOrder = order.copyWith(status: status);
+    final amount = order.products[index].price * order.products[index].quantity;
 
-    updateOrder(id, newOrder);
+    var basicAuth = base64Encode(
+        utf8.encode('${RazorpaySecret.keyId}:${RazorpaySecret.keySecret}'));
+
+    print(amount);
+    final paymentDetailsResponse = await post(
+        Uri.parse(
+          'https://api.razorpay.com/v1/payments/${order.razorpayPaymentId}/refund',
+        ),
+        headers: {
+          'Authorization': 'Basic $basicAuth',
+          'content-type': 'application/json'
+        },
+        body: json.encode({
+          "amount": amount * 100,
+          "reverse_all": 1,
+        }));
+    final paymentDetails = json.decode(paymentDetailsResponse.body);
+    print(paymentDetails);
+    if (paymentDetails['status'] == 'processed') {
+      var status = order.status;
+      status[index] = 7;
+      final newOrder = order.copyWith(status: status);
+      //rejected order amount
+      updateOrder(id, newOrder);
+    }
   }
 
-  void updateOrderItem(int id, int index, String text, String uid) {
+  void updateOrderItem(
+      int id, int index, String partner, String text, String uid) {
     final order =
         orders.firstWhere((element) => element.id == id && element.uid == uid);
     var status = order.status;
     status[index] = (status[index] == 1 || status[index] == 0) ? 2 : 3;
     final newOrder = order.copyWith(
       status: status,
+      deliveryStatus: order.deliveryStatus
+        ..[index] = {
+          'partner': partner,
+          'text': text,
+          'date': DateTime.now().millisecondsSinceEpoch.toString()
+        },
     );
     updateOrder(id, newOrder);
   }
@@ -119,6 +186,7 @@ class OrderProvider extends ChangeNotifier {
         .doc(id.toString())
         .update({
       'status': newOrder.status,
+      'delivery-status': newOrder.deliveryStatus,
     });
     orders[orders.indexWhere(
             (element) => element.id == id && element.uid == newOrder.uid)] =
@@ -186,6 +254,19 @@ class OrderProvider extends ChangeNotifier {
             type: addressesData?['type'] ?? "",
             distance: addressesData?['distance'] ?? 0,
           );
+          final deliveryStatus =
+              (categoryData['delivery-status'] as List<dynamic>?)?.map((e) {
+                    return {
+                      'partner': e['partner']?.toString() ?? "",
+                      'text': e['text']?.toString() ?? "",
+                      'date': e['date'] != null
+                          ? DateTime.fromMillisecondsSinceEpoch(
+                                  int.parse(e['date']))
+                              .toString()
+                          : DateTime.now().toString()
+                    };
+                  }).toList() ??
+                  products.map<Map<String, String>>((e) => {}).toList();
           return Order.Order(
             uid: element.reference.parent.parent?.id,
             id: categoryData['id'],
@@ -195,6 +276,7 @@ class OrderProvider extends ChangeNotifier {
             status: (categoryData['status'] as List<dynamic>)
                 .map((e) => int.parse(e.toString()))
                 .toList(),
+            deliveryStatus: deliveryStatus,
             coupon: categoryData['coupon'] == null
                 ? null
                 : Coupon(

@@ -87,8 +87,12 @@ class ProductProvider extends ChangeNotifier {
         .update({
       'name': product.name,
       'price': product.price
-          .map((e) =>
-              {'quantity': e.quantity, 'price': e.price, 'stock': e.stock})
+          .map((e) => {
+                'quantity': e.quantity,
+                'price': e.price,
+                'stock': e.stock,
+                'discount': e.discount
+              })
           .toList(),
       'image': product.image,
       'cover': product.cover,
@@ -109,7 +113,7 @@ class ProductProvider extends ChangeNotifier {
       'name': product.name,
       'price': product.price
           .map((e) =>
-              {'quantity': e.quantity, 'price': e.price, 'stock': e.stock})
+              {'quantity': e.quantity, 'price': e.price, 'stock': e.stock, 'discount': e.discount})
           .toList(),
       'image': product.image,
       'cover': product.cover,
@@ -158,9 +162,18 @@ class ProductProvider extends ChangeNotifier {
           name: categoryData['name'],
           price: (categoryData['price'] as List<dynamic>)
               .map((data) => QuantityInfo(
-                  quantity: data['quantity'],
-                  price: double.parse(data['price'].toString()),
-                  stock: int.parse(data['stock'].toString())))
+                    quantity: data['quantity'],
+                    price: double.parse(
+                      data['price'].toString(),
+                    ),
+                    stock: int.parse(
+                      data['stock'].toString(),
+                    ),
+                    discount: int.tryParse(
+                          data['discount'].toString() ?? "0",
+                        ) ??
+                        0,
+                  ))
               .toList(),
           image: categoryData['image'],
           cover: categoryData['cover'],
