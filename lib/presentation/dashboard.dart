@@ -1088,65 +1088,207 @@ class CategoriesSection extends StatelessWidget {
   }
 }
 
-class ProductsSection extends StatelessWidget {
+class ProductsSection extends StatefulWidget {
   const ProductsSection({
     super.key,
   });
 
   @override
+  State<ProductsSection> createState() => _ProductsSectionState();
+}
+
+class _ProductsSectionState extends State<ProductsSection>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
+  late TabController _subTabController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final categoriesProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    _tabController =
+        TabController(length: categoriesProvider.categories.length, vsync: this)
+          ..addListener(() {
+            ;
+            _subTabController = TabController(
+                length: categoriesProvider.subcategories
+                    .where((element) =>
+                        categoriesProvider.categories[_tabController.index] ==
+                        element.category)
+                    .length,
+                vsync: this)
+              ..addListener(() {
+                setState(() {});
+              });
+
+            print(categoriesProvider.subcategories.where((element) =>
+                categoriesProvider.categories[_tabController.index] ==
+                element.category));
+            setState(() {});
+          });
+    _subTabController = TabController(
+        length: categoriesProvider.subcategories
+            .where((element) =>
+                categoriesProvider.categories[_tabController.index] ==
+                element.category)
+            .length,
+        vsync: this)
+      ..addListener(() {
+        setState(() {});
+      });
+    searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  final searchController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Products'.toUpperCase(),
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+    return Consumer<CategoryProvider>(builder: (context, categoryProvider, _) {
+      final categories = categoryProvider.categories;
+      final subcategories = categoryProvider.subcategories;
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Products'.toUpperCase(),
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            Text(
+              'Everything naturals at one place'.toUpperCase(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  isDense: true,
+                  filled: true,
+                  hintText: 'Search',
+                  fillColor: const Color(0x50787F54),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide.none),
+                  suffixIcon: const Icon(
+                    FeatherIcons.search,
+                  ),
                 ),
-          ),
-          Text(
-            'Everything naturals at one place'.toUpperCase(),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(
-            height: 24,
-          ),
-          Consumer<ProductProvider>(builder: (context, productProvider, _) {
-            return GridView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: productProvider.products.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 24,
-                    mainAxisSpacing: 24,
-                    childAspectRatio: 0.67),
-                itemBuilder: (context, index) {
-                  return OpenContainer(
-                    middleColor: Theme.of(context).colorScheme.background,
-                    openColor: Theme.of(context).colorScheme.background,
-                    closedColor: Theme.of(context).colorScheme.background,
-                    transitionDuration: const Duration(milliseconds: 500),
-                    closedBuilder: (BuildContext c, VoidCallback action) =>
-                        ExploreProductCard(
-                      productProvider.products[index],
-                      onEdit: action,
-                    ),
-                    openElevation: 0,
-                    closedShape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                    closedElevation: 0.0,
-                    openBuilder: (BuildContext c, VoidCallback action) =>
-                        NewProductPage(
-                      product: productProvider.products[index],
-                    ),
-                    tappable: false,
-                  );
-                });
-          }),
-        ],
-      ),
-    );
+                controller: searchController,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              //.copyWith(top: 80),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                searchController.text.isEmpty
+                    ? TabBar(
+                        isScrollable: true,
+                        tabs: categories
+                            .map(
+                              (e) => Tab(
+                                text: e.name,
+                              ),
+                            )
+                            .toList(),
+                        controller: _tabController,
+                      )
+                    : const SizedBox(),
+                searchController.text.isEmpty && _subTabController.length > 0
+                    ? TabBar(
+                        isScrollable: true,
+                        tabs: subcategories
+                            .where((element) =>
+                                categories[_tabController.index] ==
+                                element.category)
+                            .map((e) => Tab(
+                                  text: e.name,
+                                ))
+                            .toList(),
+                        controller: _subTabController,
+                      )
+                    : const SizedBox(),
+                const SizedBox(
+                  height: 24,
+                ),
+              ]),
+            ),
+            Consumer<ProductProvider>(builder: (context, productProvider, _) {
+              var categoricalProducts = searchController.text.isEmpty
+                  ? productProvider.products
+                      .where((element) =>
+                          element.category == categories[_tabController.index])
+                      .toList()
+                  : productProvider.products
+                      .where((element) =>
+                          searchController.text.isEmpty ||
+                          element.name
+                              .toLowerCase()
+                              .contains(searchController.text.toLowerCase()))
+                      .toList();
+              // print(categoricalProducts.first.name);
+              // print(categoricalProducts.first.subcategory?.name);
+              if (_subTabController.length >= 1) {
+                print(subcategories
+                    .where((element) =>
+                        element.category == categories[_tabController.index])
+                    .toList()[_subTabController.index]
+                    .name);
+                categoricalProducts = categoricalProducts
+                    .where((element) =>
+                        element.subcategory ==
+                        subcategories
+                            .where((element) =>
+                                element.category ==
+                                categories[_tabController.index])
+                            .toList()[_subTabController.index])
+                    .toList();
+                // print(categoricalProducts.first.name);
+              }
+              return GridView.builder(
+                  shrinkWrap: true,
+                  primary: false,
+                  itemCount: categoricalProducts.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 24,
+                      mainAxisSpacing: 24,
+                      childAspectRatio: 0.67),
+                  itemBuilder: (context, index) {
+                    return OpenContainer(
+                      middleColor: Theme.of(context).colorScheme.background,
+                      openColor: Theme.of(context).colorScheme.background,
+                      closedColor: Theme.of(context).colorScheme.background,
+                      transitionDuration: const Duration(milliseconds: 500),
+                      closedBuilder: (BuildContext c, VoidCallback action) =>
+                          ExploreProductCard(
+                        categoricalProducts[index],
+                        onEdit: action,
+                      ),
+                      openElevation: 0,
+                      closedShape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                      closedElevation: 0.0,
+                      openBuilder: (BuildContext c, VoidCallback action) =>
+                          NewProductPage(
+                        product: categoricalProducts[index],
+                      ),
+                      tappable: false,
+                    );
+                  });
+            }),
+          ],
+        ),
+      );
+    });
   }
 }
