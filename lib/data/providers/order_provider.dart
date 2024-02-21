@@ -260,9 +260,10 @@ class OrderProvider extends ChangeNotifier {
                       'partner': e['partner']?.toString() ?? "",
                       'text': e['text']?.toString() ?? "",
                       'date': e['date'] != null
-                          ? DateTime.fromMillisecondsSinceEpoch(
-                                  int.parse(e['date']))
-                              .toString()
+                          ? (DateTime.tryParse(e['date'])?.toString() ??
+                              DateTime.fromMillisecondsSinceEpoch(
+                                      int.parse(e['date']))
+                                  .toString())
                           : DateTime.now().toString()
                     };
                   }).toList() ??
