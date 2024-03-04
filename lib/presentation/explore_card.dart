@@ -76,14 +76,16 @@ class ExploreProductCard extends StatelessWidget {
             : const SizedBox(
                 height: 16,
               ),
+        // Text(
+        //   product.description,
+        //   style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        //         fontWeight: FontWeight.normal,
+        //       ),
+        //   maxLines: 4,
+        //   overflow: TextOverflow.ellipsis,
+        // ),
         Text(
-          product.description,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.normal,
-              ),
-          maxLines: 4,
-          overflow: TextOverflow.ellipsis,
-        ),
+            "Stock: ${product.price.map((e) => "${e.stock} (${e.quantity})").join("\n")}"),
         const SizedBox(
           height: 8,
         ),

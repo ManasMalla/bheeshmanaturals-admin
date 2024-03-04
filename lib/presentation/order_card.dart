@@ -3,6 +3,7 @@ import 'package:bheeshma_naturals_admin/data/providers/order_provider.dart';
 import 'package:bheeshma_naturals_admin/presentation/invoice_page.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -84,6 +85,18 @@ class _OrderCardState extends State<OrderCard> {
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ),
+                    const SizedBox(
+                      width: 24,
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(
+                                text:
+                                    "${widget.order.shippingAddress.name}\n${widget.order.shippingAddress.phoneNumber}\n${widget.order.billingAddress.doorNumber}, ${widget.order.billingAddress.building}, ${widget.order.billingAddress.street}, ${widget.order.billingAddress.city}, ${widget.order.billingAddress.state}, ${widget.order.billingAddress.pincode}"),
+                          );
+                        },
+                        icon: const Icon(FeatherIcons.copy)),
                   ],
                 ),
               ),
