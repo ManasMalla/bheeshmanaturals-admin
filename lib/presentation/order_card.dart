@@ -81,7 +81,7 @@ class _OrderCardState extends State<OrderCard> {
                     ),
                     Expanded(
                       child: Text(
-                        "${widget.order.shippingAddress.name}\n${widget.order.shippingAddress.phoneNumber}\n${widget.order.billingAddress.doorNumber}, ${widget.order.billingAddress.building}, ${widget.order.billingAddress.street}, ${widget.order.billingAddress.city}, ${widget.order.billingAddress.state}, ${widget.order.billingAddress.pincode}",
+                        "${widget.order.shippingAddress.name}\n${widget.order.billingAddress.doorNumber}, ${widget.order.billingAddress.building}, ${widget.order.billingAddress.street}, ${widget.order.billingAddress.city}, ${widget.order.billingAddress.state}, ${widget.order.billingAddress.pincode}\n${widget.order.shippingAddress.phoneNumber}",
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                     ),

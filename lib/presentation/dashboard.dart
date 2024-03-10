@@ -154,7 +154,9 @@ class _DashboardPageState extends State<DashboardPage> {
               ]),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: pageIndex == 3
+                  ? EdgeInsets.all(24).copyWith(left: 0)
+                  : const EdgeInsets.all(24),
               child: pageIndex == 1
                   ? const CategoriesSection()
                   : pageIndex == 2
@@ -1153,15 +1155,23 @@ class _ProductsSectionState extends State<ProductsSection>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Products'.toUpperCase(),
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
+            Padding(
+              padding: const EdgeInsets.only(left: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Products'.toUpperCase(),
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
-            ),
-            Text(
-              'Everything naturals at one place'.toUpperCase(),
-              style: Theme.of(context).textTheme.titleMedium,
+                  Text(
+                    'Everything naturals at one place'.toUpperCase(),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(
               height: 24,
@@ -1186,106 +1196,181 @@ class _ProductsSectionState extends State<ProductsSection>
                 controller: searchController,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              //.copyWith(top: 80),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                searchController.text.isEmpty
-                    ? TabBar(
-                        isScrollable: true,
-                        tabs: categories
-                            .map(
-                              (e) => Tab(
-                                text: e.name,
-                              ),
-                            )
-                            .toList(),
-                        controller: _tabController,
-                      )
-                    : const SizedBox(),
-                searchController.text.isEmpty && _subTabController.length > 0
-                    ? TabBar(
-                        isScrollable: true,
-                        tabs: subcategories
-                            .where((element) =>
-                                categories[_tabController.index] ==
-                                element.category)
-                            .map((e) => Tab(
-                                  text: e.name,
-                                ))
-                            .toList(),
-                        controller: _subTabController,
-                      )
-                    : const SizedBox(),
-                const SizedBox(
-                  height: 24,
-                ),
-              ]),
+            SizedBox(
+              height: 24,
             ),
-            Consumer<ProductProvider>(builder: (context, productProvider, _) {
-              var categoricalProducts = searchController.text.isEmpty
-                  ? productProvider.products
-                      .where((element) =>
-                          element.category == categories[_tabController.index])
-                      .toList()
-                  : productProvider.products
-                      .where((element) =>
-                          searchController.text.isEmpty ||
-                          element.name
-                              .toLowerCase()
-                              .contains(searchController.text.toLowerCase()))
-                      .toList();
-              // print(categoricalProducts.first.name);
-              // print(categoricalProducts.first.subcategory?.name);
-              if (_subTabController.length >= 1) {
-                print(subcategories
-                    .where((element) =>
-                        element.category == categories[_tabController.index])
-                    .toList()[_subTabController.index]
-                    .name);
-                categoricalProducts = categoricalProducts
-                    .where((element) =>
-                        element.subcategory ==
-                        subcategories
-                            .where((element) =>
-                                element.category ==
-                                categories[_tabController.index])
-                            .toList()[_subTabController.index])
-                    .toList();
-                // print(categoricalProducts.first.name);
-              }
-              return GridView.builder(
-                  shrinkWrap: true,
-                  primary: false,
-                  itemCount: categoricalProducts.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 24,
-                      mainAxisSpacing: 24,
-                      childAspectRatio: 0.67),
-                  itemBuilder: (context, index) {
-                    return OpenContainer(
-                      middleColor: Theme.of(context).colorScheme.background,
-                      openColor: Theme.of(context).colorScheme.background,
-                      closedColor: Theme.of(context).colorScheme.background,
-                      transitionDuration: const Duration(milliseconds: 500),
-                      closedBuilder: (BuildContext c, VoidCallback action) =>
-                          ExploreProductCard(
-                        categoricalProducts[index],
-                        onEdit: action,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(24),
+                  margin: EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: categories
+                        .map(
+                          (e) => InkWell(
+                            onTap: () {
+                              _tabController.animateTo(
+                                categories.indexOf(e),
+                                duration: Duration(
+                                  seconds: 1,
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: 200,
+                              decoration: BoxDecoration(
+                                  color: e == categories[_tabController.index]
+                                      ? Theme.of(context).colorScheme.secondary
+                                      : null,
+                                  borderRadius: BorderRadius.circular(36)),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12)
+                                    .copyWith(
+                                        left: e ==
+                                                categories[_tabController.index]
+                                            ? 24
+                                            : null),
+                                child: Text(
+                                  e.name,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          fontWeight: e ==
+                                                  categories[
+                                                      _tabController.index]
+                                              ? FontWeight.w700
+                                              : FontWeight.w400,
+                                          color: e ==
+                                                  categories[
+                                                      _tabController.index]
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondary
+                                              : null),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                SizedBox(
+                  width: 16,
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        //.copyWith(top: 80),
+                        child:
+                            Column(mainAxisSize: MainAxisSize.min, children: [
+                          searchController.text.isEmpty &&
+                                  _subTabController.length > 0
+                              ? TabBar(
+                                  isScrollable: true,
+                                  tabs: subcategories
+                                      .where((element) =>
+                                          categories[_tabController.index] ==
+                                          element.category)
+                                      .map((e) => Tab(
+                                            text: e.name,
+                                          ))
+                                      .toList(),
+                                  controller: _subTabController,
+                                )
+                              : const SizedBox(),
+                          const SizedBox(
+                            height: 24,
+                          ),
+                        ]),
                       ),
-                      openElevation: 0,
-                      closedShape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      closedElevation: 0.0,
-                      openBuilder: (BuildContext c, VoidCallback action) =>
-                          NewProductPage(
-                        product: categoricalProducts[index],
-                      ),
-                      tappable: false,
-                    );
-                  });
-            }),
+                      Consumer<ProductProvider>(
+                          builder: (context, productProvider, _) {
+                        var categoricalProducts = searchController.text.isEmpty
+                            ? productProvider.products
+                                .where((element) =>
+                                    element.category ==
+                                    categories[_tabController.index])
+                                .toList()
+                            : productProvider.products
+                                .where((element) =>
+                                    searchController.text.isEmpty ||
+                                    element.name.toLowerCase().contains(
+                                        searchController.text.toLowerCase()))
+                                .toList();
+                        // print(categoricalProducts.first.name);
+                        // print(categoricalProducts.first.subcategory?.name);
+                        if (_subTabController.length >= 1) {
+                          print(subcategories
+                              .where((element) =>
+                                  element.category ==
+                                  categories[_tabController.index])
+                              .toList()[_subTabController.index]
+                              .name);
+                          categoricalProducts = categoricalProducts
+                              .where((element) =>
+                                  element.subcategory ==
+                                  subcategories
+                                      .where((element) =>
+                                          element.category ==
+                                          categories[_tabController.index])
+                                      .toList()[_subTabController.index])
+                              .toList();
+                          // print(categoricalProducts.first.name);
+                        }
+                        return GridView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: categoricalProducts.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 24,
+                                    mainAxisSpacing: 24,
+                                    childAspectRatio: 0.67),
+                            itemBuilder: (context, index) {
+                              return OpenContainer(
+                                middleColor:
+                                    Theme.of(context).colorScheme.background,
+                                openColor:
+                                    Theme.of(context).colorScheme.background,
+                                closedColor:
+                                    Theme.of(context).colorScheme.background,
+                                transitionDuration:
+                                    const Duration(milliseconds: 500),
+                                closedBuilder:
+                                    (BuildContext c, VoidCallback action) =>
+                                        ExploreProductCard(
+                                  categoricalProducts[index],
+                                  onEdit: action,
+                                ),
+                                openElevation: 0,
+                                closedShape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16)),
+                                closedElevation: 0.0,
+                                openBuilder:
+                                    (BuildContext c, VoidCallback action) =>
+                                        NewProductPage(
+                                  product: categoricalProducts[index],
+                                ),
+                                tappable: false,
+                              );
+                            });
+                      }),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       );
