@@ -665,7 +665,13 @@ class _NewProductPageState extends State<NewProductPage> {
                             var product = Product(
                               docId: widget.product?.docId,
                               id: widget.product?.id ??
-                                  productProvider.products.length,
+                                  productProvider.products
+                                          .reduce((value, element) =>
+                                              value.id > element.id
+                                                  ? value
+                                                  : element)
+                                          .id +
+                                      1,
                               name: nameController.text,
                               description: descriptionController.text,
                               price: pricesAndQuantityControllers

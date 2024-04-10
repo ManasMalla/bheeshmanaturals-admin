@@ -204,18 +204,43 @@ class _OrderCardState extends State<OrderCard> {
                                 ? SizedBox()
                                 : Opacity(
                                     opacity: 0.5,
-                                    child: Text(
-                                      "${widget.order.deliveryStatus[index]['partner']}, ${widget.order.deliveryStatus[index]['text']}",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                              decoration:
-                                                  widget.order.status[index] > 2
-                                                      ? TextDecoration
-                                                          .lineThrough
-                                                      : null,
-                                              decorationThickness: 2),
+                                    child: InkWell(
+                                      onTap: () {
+                                        var trackingIDController =
+                                            TextEditingController(
+                                                text: widget
+                                                    .order
+                                                    .deliveryStatus[index]
+                                                        ['text']
+                                                    .toString());
+                                        var trackingPartnerController =
+                                            TextEditingController(
+                                                text: widget
+                                                    .order
+                                                    .deliveryStatus[index]
+                                                        ['partner']
+                                                    .toString());
+                                        selectedItems = [index];
+                                        showDeliveryStatusChangeBottomSheet(
+                                            context,
+                                            selectedItems,
+                                            trackingPartnerController,
+                                            trackingIDController,
+                                            orderProvider);
+                                      },
+                                      child: Text(
+                                        "${widget.order.deliveryStatus[index]['partner']}, ${widget.order.deliveryStatus[index]['text']}",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                                decoration: widget.order
+                                                            .status[index] >
+                                                        2
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                                decorationThickness: 2),
+                                      ),
                                     ),
                                   ),
                           ],
@@ -288,10 +313,18 @@ class _OrderCardState extends State<OrderCard> {
       TextEditingController trackingPartnerController,
       TextEditingController trackingIDController,
       OrderProvider orderProvider) {
+    final initialPartner = trackingPartnerController.text;
+    final initialID = trackingIDController.text;
     return showModalBottomSheet(
         context: context,
         builder: (context) {
           return StatefulBuilder(builder: (context, setSheetState) {
+            trackingPartnerController.addListener(() {
+              setSheetState(() {});
+            });
+            trackingIDController.addListener(() {
+              setSheetState(() {});
+            });
             return Padding(
               padding: const EdgeInsets.all(48.0),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -305,7 +338,7 @@ class _OrderCardState extends State<OrderCard> {
                   'Everything naturals at one place'.toUpperCase(),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                ...(widget.order.status[selectedItems.first] < 2
+                ...(widget.order.status[selectedItems.first] <= 2
                     ? [
                         const SizedBox(
                           height: 24,
@@ -383,13 +416,17 @@ class _OrderCardState extends State<OrderCard> {
                                       Text("Tracking ID cannot be empty")));
                           return;
                         }
+
                         for (var element in selectedItems) {
                           orderProvider.updateOrderItem(
                               widget.order.id,
                               element,
                               trackingPartnerController.text,
                               trackingIDController.text,
-                              widget.order.uid ?? "");
+                              widget.order.uid ?? "",
+                              initialID != trackingIDController.text ||
+                                  initialPartner !=
+                                      trackingPartnerController.text);
                         }
 
                         Navigator.of(context).pop();
@@ -398,7 +435,11 @@ class _OrderCardState extends State<OrderCard> {
                           widget.order.status[selectedItems.first] == 1 ||
                                   widget.order.status[selectedItems.first] == 0
                               ? "Ship"
-                              : "Deliver"),
+                              : initialID != trackingIDController.text ||
+                                      initialPartner !=
+                                          trackingPartnerController.text
+                                  ? "Update"
+                                  : "Deliver"),
                     ),
                   ],
                 )

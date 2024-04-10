@@ -160,12 +160,13 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  void updateOrderItem(
-      int id, int index, String partner, String text, String uid) {
+  void updateOrderItem(int id, int index, String partner, String text,
+      String uid, bool isUpdatingPartner) {
     final order =
         orders.firstWhere((element) => element.id == id && element.uid == uid);
     var status = order.status;
-    status[index] = (status[index] == 1 || status[index] == 0) ? 2 : 3;
+    status[index] =
+        (status[index] == 1 || status[index] == 0 || isUpdatingPartner) ? 2 : 3;
     final newOrder = order.copyWith(
       status: status,
       deliveryStatus: order.deliveryStatus
