@@ -84,95 +84,98 @@ class _DashboardPageState extends State<DashboardPage> {
             const NewProductPage(),
         tappable: false,
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          NavigationDrawer(
-              backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? null
-                  : Colors.white,
-              selectedIndex: pageIndex - 1,
-              onDestinationSelected: (value) {
-                setState(() {
-                  pageIndex = value + 1;
-                });
-              },
-              children: [
-                const SizedBox(
-                  height: 24,
-                ),
-                Row(
-                  children: [
-                    const SizedBox(
-                      width: 24,
-                    ),
-                    SvgPicture.asset(
-                      'assets/images/bheeshma-naturals.svg',
-                      height: 48,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 24,
-                ),
-                ...([
-                  {
-                    'icon': FeatherIcons.package,
-                    'label': 'Categories',
-                  },
-                  {
-                    'icon': FeatherIcons.package,
-                    'label': 'Subcatgories',
-                  },
-                  {
-                    'icon': FeatherIcons.package,
-                    'label': 'Product',
-                  },
-                  {
-                    'icon': FeatherIcons.trendingUp,
-                    'label': 'Advertisements',
-                  },
-                  {
-                    'icon': FeatherIcons.package,
-                    'label': 'Orders',
-                  },
-                  {
-                    'icon': FeatherIcons.bell,
-                    'label': 'Notifications',
-                  },
-                  {
-                    'icon': FeatherIcons.dollarSign,
-                    'label': 'Coupons',
-                  },
-                ].map(
-                  (e) => NavigationDrawerDestination(
-                    icon: Icon(e['icon'] as IconData),
-                    label: Text(e['label'].toString()),
+      body: Padding(
+        padding: EdgeInsets.only(bottom: 56),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            NavigationDrawer(
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? null
+                    : Colors.white,
+                selectedIndex: pageIndex - 1,
+                onDestinationSelected: (value) {
+                  setState(() {
+                    pageIndex = value + 1;
+                  });
+                },
+                children: [
+                  const SizedBox(
+                    height: 24,
                   ),
-                )),
-              ]),
-          Expanded(
-            child: Padding(
-              padding: pageIndex == 3
-                  ? EdgeInsets.all(24).copyWith(left: 0)
-                  : const EdgeInsets.all(24),
-              child: pageIndex == 1
-                  ? const CategoriesSection()
-                  : pageIndex == 2
-                      ? const SubcategoriesSection()
-                      : pageIndex == 3
-                          ? const ProductsSection()
-                          : pageIndex == 4
-                              ? const AdvertisementSection()
-                              : pageIndex == 5
-                                  ? const OrderSection()
-                                  : pageIndex == 6
-                                      ? const NotificationSection()
-                                      : const CouponSection(),
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 24,
+                      ),
+                      SvgPicture.asset(
+                        'assets/images/bheeshma-naturals.svg',
+                        height: 48,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  ...([
+                    {
+                      'icon': FeatherIcons.package,
+                      'label': 'Categories',
+                    },
+                    {
+                      'icon': FeatherIcons.package,
+                      'label': 'Subcatgories',
+                    },
+                    {
+                      'icon': FeatherIcons.package,
+                      'label': 'Product',
+                    },
+                    {
+                      'icon': FeatherIcons.trendingUp,
+                      'label': 'Advertisements',
+                    },
+                    {
+                      'icon': FeatherIcons.package,
+                      'label': 'Orders',
+                    },
+                    {
+                      'icon': FeatherIcons.bell,
+                      'label': 'Notifications',
+                    },
+                    {
+                      'icon': FeatherIcons.dollarSign,
+                      'label': 'Coupons',
+                    },
+                  ].map(
+                    (e) => NavigationDrawerDestination(
+                      icon: Icon(e['icon'] as IconData),
+                      label: Text(e['label'].toString()),
+                    ),
+                  )),
+                ]),
+            Expanded(
+              child: Padding(
+                padding: pageIndex == 3
+                    ? EdgeInsets.all(24).copyWith(left: 0)
+                    : const EdgeInsets.all(24),
+                child: pageIndex == 1
+                    ? const CategoriesSection()
+                    : pageIndex == 2
+                        ? const SubcategoriesSection()
+                        : pageIndex == 3
+                            ? const ProductsSection()
+                            : pageIndex == 4
+                                ? const AdvertisementSection()
+                                : pageIndex == 5
+                                    ? const OrderSection()
+                                    : pageIndex == 6
+                                        ? const NotificationSection()
+                                        : const CouponSection(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

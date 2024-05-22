@@ -1,4 +1,5 @@
 import 'package:bheeshma_naturals_admin/data/entitites/notification.dart';
+import 'package:bheeshma_naturals_admin/data/entitites/product.dart';
 import 'package:bheeshma_naturals_admin/data/providers/notification_provider.dart';
 import 'package:bheeshma_naturals_admin/data/providers/product_provider.dart';
 import 'package:flutter/material.dart';
@@ -294,29 +295,44 @@ void showNotificationBottomSheet(
                             ? Expanded(
                                 child: Consumer<ProductProvider>(
                                     builder: (context, productProvider, _) {
-                                  return DropdownButtonFormField<String>(
-                                    onChanged: (_) {
-                                      payloadController.text =
-                                          _ ?? payloadController.text;
+                                  return Autocomplete<Product>(
+                                    onSelected: (_) {
+                                      payloadController.text = _.id.toString();
                                       setSheetState(() {});
                                     },
-                                    value: payloadController.text.isEmpty
-                                        ? null
-                                        : payloadController.text,
-                                    items: productProvider.products
-                                        .map((e) => DropdownMenuItem(
-                                              value: e.id.toString(),
-                                              child: Text(
-                                                e.name,
-                                              ),
-                                            ))
-                                        .toList(),
-                                    decoration: InputDecoration(
-                                      border: UnderlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      labelText: 'Arguments',
-                                    ),
+                                    // value: payloadController.text.isEmpty
+                                    //     ? null
+                                    //     : payloadController.text,
+                                    optionsBuilder: (textEditingValue) {
+                                      return productProvider.products
+                                          .where((element) => element.name
+                                              .toLowerCase()
+                                              .contains(textEditingValue.text
+                                                  .toLowerCase()))
+                                          .toList();
+                                    },
+                                    displayStringForOption: (option) {
+                                      return option.name;
+                                    },
+                                    fieldViewBuilder: (context,
+                                        textEditingController,
+                                        focusNode,
+                                        onFieldSubmitted) {
+                                      return TextField(
+                                        controller: textEditingController,
+                                        focusNode: focusNode,
+                                        onSubmitted: (_) {
+                                          onFieldSubmitted();
+                                        },
+                                        decoration: InputDecoration(
+                                          border: UnderlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          labelText: 'Product',
+                                        ),
+                                      );
+                                    },
                                   );
                                 }),
                               )

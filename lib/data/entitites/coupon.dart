@@ -1,4 +1,3 @@
-
 import 'package:bheeshma_naturals_admin/data/entitites/discount_type.dart';
 
 class Coupon {

@@ -99,8 +99,8 @@ class CouponProvider extends ChangeNotifier {
           minimumOrderAmount: categoryData['min-order'],
           maximumDiscountAmount:
               double.parse(categoryData['max-discount'].toString()),
-          validFrom: categoryData['valid-from'],
-          validTill: categoryData['valid-till'],
+          validFrom: categoryData['valid-from'].toDate(),
+          validTill: categoryData['valid-till'].toDate(),
           isActive: categoryData['is-active'],
           isVisible: categoryData['is-visible'],
         );
