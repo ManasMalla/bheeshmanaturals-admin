@@ -73,6 +73,13 @@ class _DashboardPageState extends State<DashboardPage> {
                         Provider.of<CouponProvider>(context, listen: false));
                     return;
                   }
+                  if (pageIndex == 8) {
+                    showImageAdvertisementBottomSheet(
+                        context,
+                        Provider.of<AdvertisementProvider>(context,
+                            listen: false));
+                    return;
+                  }
                   action();
                 },
               ),
@@ -147,6 +154,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       'icon': FeatherIcons.dollarSign,
                       'label': 'Coupons',
                     },
+                    {
+                      'icon': FeatherIcons.trendingUp,
+                      'label': 'Image Advertisements',
+                    },
                   ].map(
                     (e) => NavigationDrawerDestination(
                       icon: Icon(e['icon'] as IconData),
@@ -171,7 +182,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ? const OrderSection()
                                     : pageIndex == 6
                                         ? const NotificationSection()
-                                        : const CouponSection(),
+                                        : pageIndex == 7
+                                            ? const CouponSection()
+                                            : const ImageAdvertisementSection(),
               ),
             ),
           ],
@@ -1013,6 +1026,64 @@ class SubcategoriesSection extends StatelessWidget {
           ),
           Consumer<CategoryProvider>(builder: (context, categoryProvider, _) {
             return CategoriesPage(categoryProvider.subcategories);
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+class ImageAdvertisementSection extends StatelessWidget {
+  const ImageAdvertisementSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Image Advertisements'.toUpperCase(),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          Text(
+            'Everything naturals at one place'.toUpperCase(),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(
+            height: 24,
+          ),
+          Consumer<AdvertisementProvider>(
+              builder: (context, advertisementProvider, _) {
+            return GridView.builder(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: advertisementProvider.imageAds.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 24,
+                    mainAxisSpacing: 24,
+                    childAspectRatio: 2.2),
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      showImageAdvertisementBottomSheet(
+                          context, advertisementProvider,
+                          advertisement: advertisementProvider.imageAds[index]);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        advertisementProvider.imageAds[index].url,
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: double.infinity,
+                      ),
+                    ),
+                  );
+                });
           }),
         ],
       ),

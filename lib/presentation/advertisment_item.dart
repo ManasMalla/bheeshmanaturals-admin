@@ -278,3 +278,107 @@ Future<dynamic> showAdvertisementBottomSheet(
         });
       });
 }
+
+Future<dynamic> showImageAdvertisementBottomSheet(
+    BuildContext context, AdvertisementProvider advertisementProvider,
+    {ImageAdvertisement? advertisement}) {
+  return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        var nameController = TextEditingController(text: advertisement?.url);
+
+        return StatefulBuilder(builder: (context, setSheetState) {
+          return Padding(
+            padding: const EdgeInsets.all(48.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  advertisement == null
+                      ? 'Add advertisement'.toUpperCase()
+                      : 'Update advertisement'.toUpperCase(),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                Text(
+                  'Everything naturals at one place'.toUpperCase(),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                            border: const UnderlineInputBorder(
+                                borderSide: BorderSide.none),
+                            labelText: 'URL',
+                            filled: true,
+                            fillColor: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer),
+                        controller: nameController,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Row(children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Cancel"),
+                  ),
+                  const Spacer(),
+                  advertisement != null
+                      ? OutlinedButton(
+                          onPressed: () {
+                            advertisementProvider
+                                .deleteImageAdvertisement(advertisement.id);
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Delete"),
+                        )
+                      : SizedBox(),
+                  SizedBox(
+                    width: 24,
+                  ),
+                  FilledButton(
+                    onPressed: () async {
+                      if (nameController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please fill all the fields'),
+                          ),
+                        );
+                        return;
+                      }
+                      if (advertisement != null) {
+                        await advertisementProvider.updateImageAdvertisement(
+                            ImageAdvertisement(
+                                url: nameController.text,
+                                id: advertisement.id));
+                      } else {
+                        await advertisementProvider.addImageAdvertisement(
+                            ImageAdvertisement(
+                                url: nameController.text, id: ""));
+                      }
+
+                      Navigator.pop(context);
+                    },
+                    child: Text(advertisement == null ? 'Add' : 'Update'),
+                  ),
+                ]),
+              ],
+            ),
+          );
+        });
+      });
+}
